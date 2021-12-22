@@ -1,0 +1,19 @@
+name: large-records-plugin
+
+dependencies:
+  - base >= 4.13 # ghc 8.8.4
+
+executables:
+  exe:
+    main: Main.hs
+    source-dirs: app
+    dependencies:
+      - large-records-plugin
+      - large-records
+
+library:
+  source-dirs: src
+  dependencies:
+    - ghc
+    - containers
+    - uniplate

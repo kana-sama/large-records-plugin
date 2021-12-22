@@ -1,0 +1,38 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           large-records-plugin
+version:        0.0.0
+build-type:     Simple
+
+library
+  exposed-modules:
+      Data.Record.Plugin
+  other-modules:
+      Paths_large_records_plugin
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.13
+    , containers
+    , generic-lens
+    , ghc
+    , lens
+    , mtl
+    , uniplate
+  default-language: Haskell2010
+
+executable exe
+  main-is: Main.hs
+  other-modules:
+      Paths_large_records_plugin
+  hs-source-dirs:
+      app
+  build-depends:
+      base >=4.13
+    , large-records
+    , large-records-plugin
+  default-language: Haskell2010
