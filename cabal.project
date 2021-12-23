@@ -1,0 +1,12 @@
+packages: .
+
+source-repository-package
+  type: git
+  location: https://github.com/kana-sama/record-dot-preprocessor
+  tag: 66981ca110cec8a459a88a3601b257616dde3ab7
+
+source-repository-package
+  type: git
+  location: https://github.com/well-typed/large-records
+  tag: 10917c2fbea4713d3507e788adbcd8e517cfe1b3
+

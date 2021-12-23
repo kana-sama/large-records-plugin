@@ -1,5 +1,6 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE ExistentialQuantification #-}
@@ -7,33 +8,31 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
--- {-# OPTIONS_GHC -fplugin-opt=Data.Record.Plugin:args=[defaultPureScript] #-}
--- {-# OPTIONS_GHC -fplugin-opt=Data.Record.Plugin:via=Data.Record.TH.largeRecord #-}
--- {-# OPTIONS_GHC -fplugin-opt=Data.Record.Plugin:via=Q.qwe #-}
-{-# OPTIONS_GHC -fplugin=Data.Record.Plugin #-}
+{-# OPTIONS_GHC -fplugin=RecordDotPreprocessor -fplugin=Data.Record.Plugin #-}
 
-import Data.Record.TH
-import qualified Q
+{-# ANN type A "large-record" #-}
+data A a = A {a :: a, b :: Int}
+  deriving stock (Show, Eq, Ord)
 
-data X = X {a :: Int, b :: Int}
-  deriving stock (Show)
-{-# ANN type X "large-record" #-}
+exampleX = A {a = 1, b = 2}
 
-data Y = Y {a :: Int, b :: Int}
-  deriving stock (Show)
+transformX A {a} = A {a = id a, b = 190}
 
-exampleX = X {a = 10, b = 20}
-
-exampleY = Y {a = 10, b = 20}
-
-transformX X {a} = X {a = a + 10, b = 20}
-
-transformY Y {a} = Y {a = a + 10, b = 20}
+qwe = exampleX.b
 
 main = do
+  print exampleX
   print (transformX exampleX)
-  print (transformY exampleY)
+  print (exampleX == transformX exampleX)
+  print (exampleX == exampleX)
+  print (exampleX < exampleX)
+  print (exampleX < transformX exampleX)
+  print (exampleX.a, exampleX.b)
+
+-- main = print (transformX exampleX)

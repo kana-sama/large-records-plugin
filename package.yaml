@@ -10,6 +10,8 @@ executables:
     dependencies:
       - large-records-plugin
       - large-records
+      - record-dot-preprocessor
+      - record-hasfield
 
 library:
   source-dirs: src
@@ -17,3 +19,7 @@ library:
     - ghc
     - containers
     - uniplate
+    - vector
+    - large-records
+    - record-hasfield
+    - sop-core
