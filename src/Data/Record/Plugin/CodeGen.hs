@@ -27,15 +27,15 @@ genDatatype :: Record -> LHsDecl GhcPs
 genDatatype Record {tyName, conName, tyVars, fields, derivings} =
   noLoc
     ( TyClD
-        NoExt
+        noExtField
         DataDecl
-          { tcdDExt = NoExt,
+          { tcdDExt = noExtField,
             tcdLName = noLoc tyName,
             tcdTyVars = mkHsQTvs (noLoc <$> tyVars),
             tcdFixity = Prefix,
             tcdDataDefn =
               HsDataDefn
-                { dd_ext = NoExt,
+                { dd_ext = noExtField,
                   dd_ND = DataType,
                   dd_ctxt = noLoc [],
                   dd_cType = Nothing,
@@ -43,10 +43,10 @@ genDatatype Record {tyName, conName, tyVars, fields, derivings} =
                   dd_cons =
                     [ noLoc
                         ConDeclH98
-                          { con_ext = NoExt,
+                          { con_ext = noExtField,
                             con_name = noLoc conName,
                             con_forall = noLoc True,
-                            con_ex_tvs = [noLoc (UserTyVar NoExt (noLoc v)) | v <- vars],
+                            con_ex_tvs = [noLoc (UserTyVar noExtField (noLoc v)) | v <- vars],
                             con_mb_cxt = Just (noLoc [mkEqConstr v t | v <- vars | (_, t) <- fields]),
                             con_args = RecCon (noLoc [mkRecField f v | v <- vars | (f, _) <- fields]),
                             con_doc = Nothing

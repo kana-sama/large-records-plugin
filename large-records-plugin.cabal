@@ -17,12 +17,10 @@ library
       Data.Record.Plugin.RuntimeNames
       Data.Record.Plugin.Types
       Data.Record.Plugin.Views
-  other-modules:
-      Paths_large_records_plugin
   hs-source-dirs:
       src
   build-depends:
-      base >=4.13
+      base >=4.13 && <4.15
     , containers
     , ghc
     , large-records
@@ -32,15 +30,15 @@ library
     , vector
   default-language: Haskell2010
 
-executable exe
-  main-is: Main.hs
+test-suite large-records-plugin-tests
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
   other-modules:
       Paths_large_records_plugin
   hs-source-dirs:
-      app
+      test
   build-depends:
-      base >=4.13
-    , large-records
+      base >=4.13 && <4.15
     , large-records-plugin
     , record-dot-preprocessor
     , record-hasfield

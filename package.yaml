@@ -1,20 +1,11 @@
 name: large-records-plugin
 
 dependencies:
-  - base >= 4.13 # ghc 8.8.4
-
-executables:
-  exe:
-    main: Main.hs
-    source-dirs: app
-    dependencies:
-      - large-records-plugin
-      - large-records
-      - record-dot-preprocessor
-      - record-hasfield
+  - base >=4.13 && <4.15
 
 library:
   source-dirs: src
+  other-modules: []
   dependencies:
     - ghc
     - containers
@@ -23,3 +14,12 @@ library:
     - large-records
     - record-hasfield
     - sop-core
+
+tests:
+  large-records-plugin-tests:
+    main: Spec.hs
+    source-dirs: test
+    dependencies:
+      - large-records-plugin
+      - record-dot-preprocessor
+      - record-hasfield
