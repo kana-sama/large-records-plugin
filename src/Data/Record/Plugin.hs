@@ -1,11 +1,14 @@
 {-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE NamedFieldPuns #-}
 
-module Data.Record.Plugin (plugin) where
+module Data.Record.Plugin (plugin, LargeRecord (..)) where
 
 import Control.Exception
 import Control.Monad (unless)
 import Control.Monad.IO.Class (liftIO)
+import Data.Data (Data)
 import Data.Foldable (fold)
 import qualified Data.Generics.Uniplate.Data as Uniplate
 import Data.Record.Plugin.CodeGen (genLargeRecord)
@@ -15,6 +18,9 @@ import Data.Record.Plugin.Types
 import Data.Record.Plugin.Views
 import Data.Set (Set)
 import qualified Data.Set as Set
+
+data LargeRecord = LargeRecord
+  deriving stock (Data)
 
 plugin :: Plugin
 plugin = defaultPlugin {parsedResultAction, pluginRecompile = purePlugin}

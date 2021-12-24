@@ -15,11 +15,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -fplugin=RecordDotPreprocessor -fplugin=Data.Record.Plugin #-}
 
-{-# ANN type A "large-record" #-}
+import qualified Data.Record.Plugin as Nau (LargeRecord (..))
+
+{-# ANN type A Nau.LargeRecord #-}
 data A a = A {a :: a, b :: B a}
   deriving stock (Show, Eq, Ord)
 
-{-# ANN type B "large-record" #-}
+{-# ANN type B Nau.LargeRecord #-}
 data B a = B {a :: a, b :: Int}
   deriving stock (Show, Eq, Ord)
 

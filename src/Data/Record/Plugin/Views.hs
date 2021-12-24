@@ -95,4 +95,9 @@ pattern EqClass <- ((\r -> rdrNameString r == "Eq") -> True)
 pattern OrdClass <- ((\r -> rdrNameString r == "Ord") -> True)
 
 pattern LRAnn :: RdrName -> AnnDecl GhcPs
-pattern LRAnn tyName <- HsAnnotation _ _ (TypeAnnProvenance (L _ tyName)) (L _ (HsLit _ (HsString _ "large-record")))
+pattern LRAnn tyName <-
+  HsAnnotation
+    _
+    _
+    (TypeAnnProvenance (L _ tyName))
+    (L _ (HsVar _ (L _ (rdrNameString -> "LargeRecord"))))
