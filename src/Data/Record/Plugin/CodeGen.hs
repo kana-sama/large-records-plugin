@@ -1,4 +1,5 @@
 {-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE ParallelListComp #-}
 
@@ -231,20 +232,25 @@ genRequiredContext Record {fields} c =
     hasTypeVars = any (isTvOcc . rdrNameOcc) . Uniplate.universeBi
 
 genStockInstances :: Record -> [LHsDecl GhcPs]
-genStockInstances rec@Record {derivings} = [genStockInstance rec d | DeriveStock d <- derivings]
+genStockInstances rec@Record {derivings} = do
+  DeriveStock d <- derivings
+  case genStockInstance rec d of
+    Just decl -> pure decl
+    Nothing -> []
 
-genStockInstance :: Record -> StockDeriving -> LHsDecl GhcPs
-genStockInstance rec deriv =
-  instanceD_simple
-    (genRequiredContext rec cls)
-    (appT cls (recordTy rec))
-    [simpleBind mthd gen]
-    []
+genStockInstance :: Record -> StockDeriving -> Maybe (LHsDecl GhcPs)
+genStockInstance rec = \case
+  Show -> Just (mkInstance Runtime._Show Runtime.showsPrec Runtime.gshowsPrec)
+  Eq -> Just (mkInstance Runtime._Eq Runtime.eq Runtime.geq)
+  Ord -> Just (mkInstance Runtime._Ord Runtime.compare Runtime.gcompare)
+  Generic -> Nothing
   where
-    (cls, mthd, gen) = case deriv of
-      Show -> (Runtime._Show, Runtime.showsPrec, Runtime.gshowsPrec)
-      Eq -> (Runtime._Eq, Runtime.eq, Runtime.geq)
-      Ord -> (Runtime._Ord, Runtime.compare, Runtime.gcompare)
+    mkInstance cls mthd gen =
+      instanceD_simple
+        (genRequiredContext rec cls)
+        (appT cls (recordTy rec))
+        [simpleBind mthd gen]
+        []
 
 genProxy :: LHsType GhcPs -> LHsExpr GhcPs
 genProxy ty = typeSigE (varE Runtime._C_Proxy) (appT Runtime._Proxy ty)

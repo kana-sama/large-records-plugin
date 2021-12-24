@@ -19,7 +19,7 @@ import qualified Data.Record.Plugin as Nau (LargeRecord (..))
 
 {-# ANN type A Nau.LargeRecord #-}
 data A a = A {a :: a, b :: B a}
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
 
 {-# ANN type B Nau.LargeRecord #-}
 data B a = B {a :: a, b :: Int}

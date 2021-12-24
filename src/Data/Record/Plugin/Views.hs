@@ -82,17 +82,16 @@ viewRecordDeriving (L _ HsDerivingClause {deriv_clause_strategy, deriv_clause_ty
       Right [DeriveAnyClass c | HsIB _ c <- unLoc deriv_clause_tys]
     Just (L _ StockStrategy) ->
       for (hsib_body <$> unLoc deriv_clause_tys) \case
-        L _ (HsTyVar _ _ (L _ ShowClass)) -> Right (DeriveStock Show)
-        L _ (HsTyVar _ _ (L _ EqClass)) -> Right (DeriveStock Eq)
-        L _ (HsTyVar _ _ (L _ OrdClass)) -> Right (DeriveStock Ord)
+        L _ (HsTyVar _ _ (L _ (Ident "Show"))) -> Right (DeriveStock Show)
+        L _ (HsTyVar _ _ (L _ (Ident "Eq"))) -> Right (DeriveStock Eq)
+        L _ (HsTyVar _ _ (L _ (Ident "Ord"))) -> Right (DeriveStock Ord)
+        L _ (HsTyVar _ _ (L _ (Ident "Generic"))) -> Right (DeriveStock Generic)
         L _ ty -> Left (UnsupportedStockDeriving ty)
     Just (L _ strategy) -> Left (UnsupportedStrategy strategy)
 viewRecordDeriving _ = Right []
 
-pattern ShowClass, EqClass, OrdClass :: RdrName
-pattern ShowClass <- ((\r -> rdrNameString r == "Show") -> True)
-pattern EqClass <- ((\r -> rdrNameString r == "Eq") -> True)
-pattern OrdClass <- ((\r -> rdrNameString r == "Ord") -> True)
+pattern Ident :: String -> RdrName
+pattern Ident x <- (rdrNameString -> x)
 
 pattern LRAnn :: RdrName -> AnnDecl GhcPs
 pattern LRAnn tyName <-

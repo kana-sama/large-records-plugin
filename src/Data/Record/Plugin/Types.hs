@@ -39,7 +39,7 @@ data Record = Record
     derivings :: [RecordDeriving]
   }
 
-data StockDeriving = Eq | Show | Ord
+data StockDeriving = Eq | Show | Ord | Generic
 
 data RecordDeriving
   = DeriveStock StockDeriving
