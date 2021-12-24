@@ -9,6 +9,8 @@ module Data.Record.Plugin.GHC
     module BasicTypes,
     module GhcPlugins,
     module HsSyn,
+    module Outputable,
+    module DynFlags,
   )
 where
 
@@ -17,10 +19,12 @@ import BasicTypes
 import BasicTypes (PromotionFlag (NotPromoted))
 import Data.List (foldl')
 import Data.String (fromString)
+import DynFlags (getDynFlags)
 import GHC
 import GhcPlugins (HsParsedModule (..), Plugin (..), defaultPlugin, purePlugin)
 import HsSyn
 import OccName
+import Outputable (ppr, showSDoc)
 import RdrName
 import TcEvidence (HsWrapper (WpHole))
 import TysWiredIn (eqTyCon_RDR)

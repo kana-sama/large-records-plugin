@@ -248,5 +248,3 @@ genStockInstance rec deriv =
 
 genProxy :: LHsType GhcPs -> LHsExpr GhcPs
 genProxy ty = typeSigE (varE Runtime._C_Proxy) (appT Runtime._Proxy ty)
-
--- TODO: error message about fail
