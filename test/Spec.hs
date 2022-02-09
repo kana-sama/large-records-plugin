@@ -17,15 +17,15 @@
 {-# OPTIONS_GHC -fplugin=RecordDotPreprocessor -fplugin=Data.Record.Plugin #-}
 
 import Data.Functor.Identity
-import Data.Record.Plugin (LargeRecord (..))
+import Data.Record.Plugin (LargeRecordOptions (..))
 
-{-# ANN type A LargeRecord #-}
+{-# ANN type A LargeRecordStrict #-}
 data A = A {a :: Int, b :: String}
   deriving stock (Show, Eq, Ord)
 
 exampleA A {b, a} = A {a = 1, b = "2"}
 
-{-# ANN type B LargeRecord #-}
+{-# ANN type B LargeRecordStrict #-}
 data B a = B {a :: a, b :: String}
   deriving stock (Show, Eq, Ord)
 
@@ -35,7 +35,7 @@ type family HKD f a where
   HKD Identity a = a
   HKD f a = f a
 
-{-# ANN type C LargeRecord #-}
+{-# ANN type C LargeRecordStrict #-}
 data C f = C {a :: HKD f Int, b :: HKD f String}
   deriving stock (Show, Eq, Ord)
 

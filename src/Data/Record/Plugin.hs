@@ -2,57 +2,59 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE ViewPatterns #-}
 
-module Data.Record.Plugin (plugin, LargeRecord (..)) where
+module Data.Record.Plugin (plugin, LargeRecordOptions (..)) where
 
-import Control.Exception
+-- import Control.Exception (throwIO)
 import Control.Monad (unless)
+import Control.Monad.Except
 import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Writer
 import Data.Data (Data)
 import Data.Foldable (fold)
 import qualified Data.Generics.Uniplate.Data as Uniplate
+import Data.Map (Map)
+import qualified Data.Map.Strict as Map
 import Data.Record.Plugin.CodeGen (genLargeRecord)
 import Data.Record.Plugin.GHC
-import Data.Record.Plugin.RuntimeNames (moduleGHCGeneric, moduleRuntime)
-import Data.Record.Plugin.Types
-import Data.Record.Plugin.Views
+import Data.Record.Plugin.RuntimeNames (allRuntimeModules)
+import Data.Record.Plugin.Types.Exception
+import Data.Record.Plugin.Types.Options (LargeRecordOptions (..), getLargeRecordOptions)
+import Data.Record.Plugin.Types.Record (viewDataDeclName, viewRecord)
 import Data.Set (Set)
 import qualified Data.Set as Set
-
-data LargeRecord = LargeRecord
-  deriving stock (Data)
+import Data.Traversable (for)
 
 plugin :: Plugin
 plugin = defaultPlugin {parsedResultAction, pluginRecompile = purePlugin}
   where
     parsedResultAction options _ mod@HsParsedModule {hpm_module = L l module_} = do
-      case transformDecls module_ of
+      case runExcept (transformDecls module_) of
         Right module_ -> do
-          pure mod {hpm_module = L l (requiredImports module_)}
+          pure mod {hpm_module = L l (addRequiredImports module_)}
         Left err -> do
           dynFlags <- getDynFlags
-          error (formatLargeRecordPluginException dynFlags err)
+          error (formatException dynFlags err)
 
-transformDecls :: HsModule GhcPs -> Either LargeRecordPluginException (HsModule GhcPs)
+transformDecls :: HsModule GhcPs -> Except Exception (HsModule GhcPs)
 transformDecls mod@HsModule {hsmodDecls} = do
-  let largeRecords = getLargeRecordsAnnos mod
+  let largeRecords = getLargeRecordOptions mod
 
-  (hsmodDecls, transformed) <- foldFor hsmodDecls \decl ->
+  (fold -> hsmodDecls, transformed) <- runWriterT $ for hsmodDecls \decl ->
     case viewDataDeclName decl of
-      Just tyName | tyName `Set.member` largeRecords -> do
-        decl <- genLargeRecord <$> viewRecord decl
-        pure (decl, Set.singleton tyName)
-      _ -> pure ([decl], Set.empty)
+      Just tyName | Just opts <- tyName `Map.lookup` largeRecords -> do
+        tell (Set.singleton tyName)
+        rec <- lift (viewRecord opts decl)
+        pure (genLargeRecord rec)
+      _ -> pure [decl]
 
-  let untransformed = largeRecords `Set.difference` transformed
+  let untransformed = Map.keysSet largeRecords `Set.difference` transformed
   unless (Set.null untransformed) do
-    Left (Untransformed untransformed)
+    throwError (Untransformed untransformed)
 
   pure mod {hsmodDecls}
 
-requiredImports :: HsModule GhcPs -> HsModule GhcPs
-requiredImports module_@HsModule {hsmodImports} =
-  module_ {hsmodImports = hsmodImports ++ [qimportD m | m <- [moduleRuntime, moduleGHCGeneric]]}
-
-foldFor :: (Applicative m, Traversable t, Monoid b) => t a -> (a -> m b) -> m b
-foldFor xs f = fold <$> traverse f xs
+addRequiredImports :: HsModule GhcPs -> HsModule GhcPs
+addRequiredImports module_@HsModule {hsmodImports} =
+  module_ {hsmodImports = hsmodImports ++ [qimportD m | m <- allRuntimeModules]}

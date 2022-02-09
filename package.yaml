@@ -14,6 +14,7 @@ library:
     - large-records
     - record-hasfield
     - sop-core
+    - mtl
 
 tests:
   large-records-plugin-tests:

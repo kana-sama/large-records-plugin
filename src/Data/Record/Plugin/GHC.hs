@@ -32,23 +32,21 @@ noExtField :: NoExt
 noExtField = noExt
 #endif
 
+-- | Get name from possibly qualified name.
+-- - @A.b@ -> @"b"@
+-- - @b@ -> @"b"@
+--
+-- Note: module name will be ignored
 rdrNameString :: RdrName -> String
 rdrNameString = occNameString . rdrNameOcc
 
-tyVarRdr :: String -> RdrName
-tyVarRdr = mkRdrUnqual . mkTyVarOcc
+-- | Makes type variable from string
+varRdrT :: String -> RdrName
+varRdrT = mkRdrUnqual . mkTyVarOcc
 
-exprVarRdr :: String -> RdrName
-exprVarRdr = mkRdrUnqual . mkVarOcc
-
-stringL :: String -> HsLit GhcPs
-stringL = HsString NoSourceText . fromString
-
-stringTL :: String -> HsTyLit
-stringTL = HsStrTy NoSourceText . fromString
-
-intL :: Integral a => a -> HsLit GhcPs
-intL = HsInt noExtField . mkIntegralLit
+-- | Makes variable from string
+varRdr :: String -> RdrName
+varRdr = mkRdrUnqual . mkVarOcc
 
 litE :: HsLit GhcPs -> LHsExpr GhcPs
 litE = noLoc . HsLit noExtField
@@ -57,13 +55,13 @@ litT :: HsTyLit -> LHsType GhcPs
 litT = noLoc . HsTyLit noExtField
 
 stringE :: String -> LHsExpr GhcPs
-stringE = litE . stringL
+stringE = litE . HsString NoSourceText . fromString
 
 stringT :: String -> LHsType GhcPs
-stringT = litT . stringTL
+stringT = litT . HsStrTy NoSourceText . fromString
 
 intE :: Integral a => a -> LHsExpr GhcPs
-intE = litE . intL
+intE = litE . HsInt noExtField . mkIntegralLit
 
 varT :: RdrName -> LHsType GhcPs
 varT name = noLoc (HsTyVar noExtField NotPromoted (noLoc name))
@@ -83,6 +81,7 @@ opT l op r = noLoc (mkHsOpTy l (noLoc op) r)
 bangT :: LHsType GhcPs -> LHsType GhcPs
 bangT = noLoc . HsBangTy noExtField (HsSrcBang NoSourceText NoSrcUnpack SrcStrict)
 
+-- | @qualT [a, b] c@ -> @([a], [b]) => [c]@
 qualT :: [LHsType GhcPs] -> LHsType GhcPs -> LHsType GhcPs
 qualT ctx a = noLoc (HsQualTy noExtField (noLoc ctx) a)
 

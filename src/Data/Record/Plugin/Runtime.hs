@@ -1,10 +1,10 @@
 module Data.Record.Plugin.Runtime
   ( -- Vector
     Vector,
-    vectorFromList,
-    vectorToList,
-    vectorUnsafeIndex,
-    vectorUnsafeUpd,
+    fromList,
+    toList,
+    unsafeIndex,
+    unsafeUpd,
     -- LargeRecord
     noInlineUnsafeCo,
     dictFor,
@@ -55,19 +55,3 @@ import Data.Vector (Vector, copy, fromList, toList, unsafeIndex, unsafeUpd)
 import GHC.Base (Any)
 import GHC.Records.Compat (HasField (..))
 import Unsafe.Coerce (unsafeCoerce)
-
-vectorFromList :: [a] -> Vector a
-vectorFromList = Data.Vector.fromList
-{-# INLINE vectorFromList #-}
-
-vectorToList :: Vector a -> [a]
-vectorToList = Data.Vector.toList
-{-# INLINE vectorToList #-}
-
-vectorUnsafeIndex :: Vector a -> Int -> a
-vectorUnsafeIndex = Data.Vector.unsafeIndex
-{-# INLINE vectorUnsafeIndex #-}
-
-vectorUnsafeUpd :: Vector a -> [(Int, a)] -> Vector a
-vectorUnsafeUpd = Data.Vector.unsafeUpd
-{-# INLINE vectorUnsafeUpd #-}

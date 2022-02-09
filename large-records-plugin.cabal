@@ -15,8 +15,9 @@ library
       Data.Record.Plugin.GHC
       Data.Record.Plugin.Runtime
       Data.Record.Plugin.RuntimeNames
-      Data.Record.Plugin.Types
-      Data.Record.Plugin.Views
+      Data.Record.Plugin.Types.Exception
+      Data.Record.Plugin.Types.Options
+      Data.Record.Plugin.Types.Record
   hs-source-dirs:
       src
   build-depends:
@@ -24,6 +25,7 @@ library
     , containers
     , ghc
     , large-records
+    , mtl
     , record-hasfield
     , sop-core
     , uniplate
