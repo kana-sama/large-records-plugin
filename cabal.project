@@ -2,11 +2,10 @@ packages: .
 
 source-repository-package
   type: git
-  location: https://github.com/kana-sama/record-dot-preprocessor
-  tag: 66981ca110cec8a459a88a3601b257616dde3ab7
+  location: https://github.com/avnik/record-dot-preprocessor
+  tag: 85a3c933428f377865cbfc7ffc92e1ba3e4dd2cb
 
 source-repository-package
   type: git
   location: https://github.com/well-typed/large-records
   tag: 10917c2fbea4713d3507e788adbcd8e517cfe1b3
-
