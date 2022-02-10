@@ -23,8 +23,8 @@
 --
 -- > {-# OPTIONS_GHC -fplugin=RecordDotPreprocessor -fplugin=Data.Record.Plugin #-}
 --
--- Second, for now record-dot-preprocessor does not work with this plugin because it generates @HasField@ instances clashing with our own instances.
--- Use the patched version from this pull request: <https://github.com/ndmitchell/record-dot-preprocessor/pull/48>.
+-- Second, for now the official version of record-dot-preprocessor does not work with this plugin. Use the patched version from this pull request:
+-- <https://github.com/ndmitchell/record-dot-preprocessor/pull/48>.
 
 module Data.Record.Plugin (plugin, LargeRecordOptions (..)) where
 
