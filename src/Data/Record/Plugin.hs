@@ -4,6 +4,28 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE ViewPatterns #-}
 
+-- | A GHC plugin that gives the large-records treatment to records with special annotations.
+--
+-- = Usage
+--
+-- > {-# OPTIONS_GHC -fplugin=Data.Record.Plugin #-}
+-- >
+-- > {-# ANN type B LargeRecordStrict #-}
+-- > data B a = B {a :: a, b :: String}
+-- >   deriving stock (Show, Eq, Ord)
+--
+-- See 'LargeRecordOptions' for the list of all possible annotations.
+--
+-- = Usage with record-dot-preprocessor
+--
+-- There are two important points. First, the order of plugins matters — record-dot-preprocessor has to be listed before this plugin (and
+-- correspondingly will be applied /after/ this plugin):
+--
+-- > {-# OPTIONS_GHC -fplugin=RecordDotPreprocessor -fplugin=Data.Record.Plugin #-}
+--
+-- Second, for now the official version of record-dot-preprocessor does not work with this plugin. Use the patched version from this pull request:
+-- <https://github.com/ndmitchell/record-dot-preprocessor/pull/48>.
+
 module Data.Record.Plugin (plugin, LargeRecordOptions (..)) where
 
 -- import Control.Exception (throwIO)

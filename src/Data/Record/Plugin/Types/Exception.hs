@@ -1,6 +1,7 @@
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE LambdaCase #-}
 
+-- Exceptions that may be thrown by the large-records plugin.
 module Data.Record.Plugin.Types.Exception
   ( Exception (..),
     formatException,

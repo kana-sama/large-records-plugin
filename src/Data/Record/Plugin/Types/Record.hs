@@ -6,6 +6,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE ViewPatterns #-}
 
+-- | Convert GHC AST definitions of records into our own representation, 'Record'.
 module Data.Record.Plugin.Types.Record where
 
 import Control.Monad.Except
@@ -17,6 +18,7 @@ import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Traversable (for)
 
+-- | A representation for records that can be processed by large-records.
 data Record = Record
   { tyName :: RdrName,
     tyVars :: [HsTyVarBndr GhcPs],
@@ -26,8 +28,10 @@ data Record = Record
     options :: LargeRecordOptions
   }
 
+-- | Derived classes that we can support.
 data StockDeriving = Eq | Show | Ord | Generic
 
+-- | A representation for @deriving@ clauses.
 data RecordDeriving
   = DeriveStock StockDeriving
   | DeriveAnyClass (LHsType GhcPs)
