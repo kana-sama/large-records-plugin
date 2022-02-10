@@ -151,6 +151,7 @@ conDeclField name ty =
         cd_fld_doc = Nothing
       }
 
+-- | A helper for constructing 'GRHSs' (guarded right-hand sides) in the simple guard-less case.
 simpleGHRSs :: LHsExpr GhcPs -> GRHSs GhcPs (LHsExpr GhcPs)
 simpleGHRSs body = GRHSs noExtField [noLoc (GRHS noExtField [] body)] (noLoc (EmptyLocalBinds noExtField))
 
@@ -166,10 +167,26 @@ typeSig name ty = noLoc (TypeSig noExtField [noLoc name] (HsWC noExtField (HsIB 
 classOpSig :: RdrName -> LHsType GhcPs -> LSig GhcPs
 classOpSig name ty = noLoc (ClassOpSig noExtField False [noLoc name] (HsIB noExtField ty))
 
-tfInstanceD :: RdrName -> [LHsType GhcPs] -> LHsType GhcPs -> LTyFamInstDecl GhcPs
+-- | A helper for constructing @type instance@ AST.
+tfInstanceD ::
+  -- | Type family name
+  RdrName ->
+  -- | Equation LHS
+  [LHsType GhcPs] ->
+  -- | Equation RHS
+  LHsType GhcPs ->
+  LTyFamInstDecl GhcPs
 tfInstanceD name pats val = noLoc (TyFamInstDecl (HsIB noExtField (FamEqn noExtField (noLoc name) Nothing [HsValArg p | p <- pats] Prefix val)))
 
-simpleFn :: RdrName -> LHsType GhcPs -> LHsExpr GhcPs -> [LHsDecl GhcPs]
+-- | A helper for constructing simple function definitions with one equation and without patterns.
+simpleFn ::
+  -- | Function name
+  RdrName ->
+  -- | Function signature
+  LHsType GhcPs ->
+  -- | Equation RHS
+  LHsExpr GhcPs ->
+  [LHsDecl GhcPs]
 simpleFn fnName ty body =
   [ noLoc (SigD noExtField (unLoc (typeSig fnName ty))),
     noLoc (ValD noExtField (unLoc (simpleBind fnName body)))
@@ -181,13 +198,29 @@ anyclassDeriving c = noLoc (HsDerivingClause noExtField (Just (noLoc AnyclassStr
 typeEq :: RdrName
 typeEq = eqTyCon_RDR
 
-simpleBind :: RdrName -> LHsExpr GhcPs -> LHsBind GhcPs
+-- | A helper for constructing simple bindings without patterns.
+simpleBind ::
+  -- | Function/variable name
+  RdrName ->
+  -- | RHS
+  LHsExpr GhcPs ->
+  LHsBind GhcPs
 simpleBind fnName body =
   let body' = simpleGHRSs body
       body'' = MG noExtField (noLoc [noLoc (Match noExtField (FunRhs (noLoc fnName) Prefix NoSrcStrict) [] body')]) Generated
    in noLoc (FunBind noExtField (noLoc fnName) body'' WpHole [])
 
-instanceD_simple :: [LHsType GhcPs] -> LHsType GhcPs -> [LHsBind GhcPs] -> [LTyFamInstDecl GhcPs] -> LHsDecl GhcPs
+-- | A helper for constructing @instance@ AST, mimicking Template Haskell.
+instanceD_simple :: 
+  -- | Instance context
+  [LHsType GhcPs] ->
+  -- | Instance head
+  LHsType GhcPs ->
+  -- | Bindings
+  [LHsBind GhcPs] ->
+  -- | Associated types
+  [LTyFamInstDecl GhcPs] ->
+  LHsDecl GhcPs
 instanceD_simple ctx head binds assocTypes = noLoc (InstD noExtField (ClsInstD noExtField inst))
   where
     inst =
@@ -201,7 +234,17 @@ instanceD_simple ctx head binds assocTypes = noLoc (InstD noExtField (ClsInstD n
           cid_overlap_mode = Nothing
         }
 
-classD_simple :: [LHsType GhcPs] -> RdrName -> [LHsTyVarBndr GhcPs] -> [LSig GhcPs] -> LHsDecl GhcPs
+-- | A helper for constructing @class@ AST, mimicking Template Haskell.
+classD_simple ::
+  -- | Class context
+  [LHsType GhcPs] ->
+  -- | Class name
+  RdrName ->
+  -- | Type variables
+  [LHsTyVarBndr GhcPs] ->
+  -- | Method signatures
+  [LSig GhcPs] ->
+  LHsDecl GhcPs
 classD_simple ctx clsName clsVars sigs = noLoc (TyClD noExtField cls)
   where
     cls =
@@ -219,6 +262,7 @@ classD_simple ctx clsName clsVars sigs = noLoc (TyClD noExtField cls)
           tcdDocs = []
         }
 
+-- | A helper for constructing @import qualified@ AST.
 qimportD :: ModuleName -> LImportDecl GhcPs
 qimportD moduleName = noLoc do
   ImportDecl
