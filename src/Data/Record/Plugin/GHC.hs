@@ -2,6 +2,7 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE LambdaCase #-}
 
+-- | GHC AST utilities and reexports.
 module Data.Record.Plugin.GHC
   ( module Data.Record.Plugin.GHC,
     module OccName,

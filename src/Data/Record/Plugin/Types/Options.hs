@@ -5,6 +5,7 @@
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE ViewPatterns #-}
 
+-- | Generation options for large-records.
 module Data.Record.Plugin.Types.Options
   ( LargeRecordOptions (..),
     shouldRecordBeStrict,
@@ -20,16 +21,25 @@ import Data.Map (Map)
 import qualified Data.Map.Strict as Map
 import Data.Record.Plugin.GHC
 
+-- | A type specifying how a record should be treated by large-records.
+--
+-- The only possible annotations are currently:
+--
+-- > {-# ANN type T LargeRecordStrict #-}
+-- > {-# ANN type T LargeRecordLazy #-}
 data LargeRecordOptions = LargeRecordStrict | LargeRecordLazy
   deriving stock (Data)
 
+-- | Whether all fields of the record should be strict.
 shouldRecordBeStrict :: LargeRecordOptions -> Bool
 shouldRecordBeStrict LargeRecordStrict = True
 shouldRecordBeStrict LargeRecordLazy = False
 
+-- | Whether we should generate @HasField@ instances. Currently always 'True'.
 shouldGeneratedHasField :: LargeRecordOptions -> Bool
 shouldGeneratedHasField _ = True
 
+-- | Extract 'LargeRecordOptions' for all types with large-records pragmas in the module.
 getLargeRecordOptions :: HsModule GhcPs -> Map RdrName LargeRecordOptions
 getLargeRecordOptions module_ = Map.fromList do
   anno <- Uniplate.universeBi module_

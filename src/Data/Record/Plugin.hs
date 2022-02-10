@@ -26,6 +26,17 @@ import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Traversable (for)
 
+-- | A GHC plugin that gives the large-records treatment to records with special annotations.
+--
+-- Usage:
+--
+-- > {-# OPTIONS_GHC -fplugin=RecordDotPreprocessor -fplugin=Data.Record.Plugin #-}
+-- >
+-- > {-# ANN type B LargeRecordStrict #-}
+-- > data B a = B {a :: a, b :: String}
+-- >   deriving stock (Show, Eq, Ord)
+--
+-- See 'LargeRecordOptions' for the list of all possible annotations.
 plugin :: Plugin
 plugin = defaultPlugin {parsedResultAction, pluginRecompile = purePlugin}
   where

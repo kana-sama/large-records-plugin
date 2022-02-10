@@ -1,3 +1,4 @@
+-- | Reexports of types and functions used by generated code.
 module Data.Record.Plugin.Runtime
   ( -- Vector
     Vector,
